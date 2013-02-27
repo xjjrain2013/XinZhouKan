@@ -1,0 +1,123 @@
+[
+	{
+		"name": "第一版",
+		"id": "newspaper-1",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第二版",
+		"id": "newspaper-2",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第三版",
+		"id": "newspaper-3",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第四版",
+		"id": "newspaper-4",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第五版",
+		"id": "newspaper-5",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第六版",
+		"id": "newspaper-6",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第七版",
+		"id": "newspaper-7",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第八版",
+		"id": "newspaper-8",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第九版",
+		"id": "newspaper-9",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十版",
+		"id": "newspaper-10",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十一版",
+		"id": "newspaper-11",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十二版",
+		"id": "newspaper-12",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十三版",
+		"id": "newspaper-13",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十四版",
+		"id": "newspaper-14",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十五版",
+		"id": "newspaper-15",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十六版",
+		"id": "newspaper-16",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十七版",
+		"id": "newspaper-17",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十八版",
+		"id": "newspaper-18",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第十九版",
+		"id": "newspaper-19",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第二十版",
+		"id": "newspaper-20",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第二十一版",
+		"id": "newspaper-21",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第二十二版",
+		"id": "newspaper-22",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第二十三版",
+		"id": "newspaper-23",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	},{
+		"name": "第二十四版",
+		"id": "newspaper-24",
+		"phase": "第一期",
+		"imgSrc": "./img/01.jpg"
+	}
+]

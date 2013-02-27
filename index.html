@@ -1,0 +1,392 @@
+<!doctype html>
+<html>
+<head>
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height">
+
+<meta name="format-detection" content="telephone=no;address=no;email=no">
+
+<meta charset="utf-8">
+<title>webAppXjj</title>
+<link href="./css/reset.css" type="text/css" rel="stylesheet">
+<link href="./css/base.css" type="text/css" rel="stylesheet">
+<!-- <script type="text/javascript" src="./js/libs/require.js" data-main="./js/main" id="requirejsnode"></script> -->
+<script type="text/javascript" src="./js/libs/zepto.js"></script>
+<script type="text/javascript" src="./js/libs/zepto-gfx.js"></script>
+<script type="text/javascript" src="./js/libs/underscore.js"></script>
+<script type="text/javascript" src="./js/libs/backbone.js"></script>
+<script type="text/javascript" src="./js/libs/gbone.js"></script>
+<script type="text/javascript" src="./js/libs/backbone-relational.js"></script>
+<script type="text/javascript" src="./js/plugin/flip.js"></script>
+<script type="text/javascript" src="./js/plugin/iscroll.js"></script>
+<!-- <script type="text/javascript" src="./js/transitions/up_down.js"></script> -->
+
+</head>
+<body>
+<!--template-->
+<script type = "text/template" id = "newspaper-list-container">
+	<section class="page" >
+		<nav class="nav_bar style1">
+			<div class="left">
+				<a href="http://cubiq.org/dropbox/SwipeView/demo/gallery/" class="button style_black">往期</a>
+			</div>
+			<div class="center"><div class="logo">星周刊</div></div>
+			<div class="right"><a href="list.html" class="button style_black">设置</a></div>
+		</nav>
+		<article id="slides">
+			<ul class = "newspapers">
+			
+
+			</ul>
+		</article>
+		<footer></footer>
+	</section>
+</script>
+<script type = "text/template" id = "per-newspaper">
+<img src="<%= imgSrc %>">
+</script>
+
+<script type = "text/template" id = "post-lists">
+
+	<section class="page">
+	<nav class="nav_bar style1">
+	<div class="left"><a href="javascript:void(0);" class="button style_black">返回</a></div>
+	<div class="center"><div class="logo">星周刊</div></div>
+	<div class="right"></div>
+	</nav>
+	<article id="list">
+	<div class="banner"><img src="img/list/banner.png" alt="图片"></div>
+	<div class = "items">
+
+	</div>
+	
+	</article>
+	</section>
+
+</script>
+<script type = "text/template" id = "post-list-item">
+	<div class="img"><img src="<%= thumbnail %>" alt="图片"></div>
+	<div class="info"><h2><%= title %></h2><p><%= content.substr(0, 20) %></p></div>
+</script>
+<script type = "text/template" id = "post-contents">
+	<section class="page">
+	<nav class="nav_bar style1">
+	<div class="left"><a href="javascript:void(0);" class="button style_black">返回</a></div>
+	<div class="center">
+	<div class="logo"></div>
+	</div>
+	<div class="right"></div>
+	</nav>
+	<article id="article">
+	<div class="title"><%= title %></div>
+	<div class="content">
+	<p align="center"><img src="<%= featureImg %>" alt="<%= title %>"><br>
+	</p>
+	<%= content %>
+	</div>
+	</article>
+	</section>
+</script>
+
+<!--javascript-->
+<script type = "text/javascript">
+var NewspaperModel = Backbone.RelationalModel.extend({
+	relations: [{
+		type: Backbone.HasMany,
+		key: 'posts',
+		relatedModel: 'PostModel',
+		collectionType: 'PostCollection',
+		reverseRelation: {
+			key: 'embodyIn',
+			type: Backbone.HasOne,
+			includeInJSON: 'id'
+		}
+	}],
+
+	initialize: function() {
+		console.log('NewspaperModel init ....');
+	}
+});
+
+var NewspaperCollection = Backbone.Collection.extend({
+	model: NewspaperModel,
+	url: './data/panel.json',
+	initialize: function() {
+		console.log('NewspaperCollection init ....');
+	}
+});
+
+var PostModel = Backbone.RelationalModel.extend({
+	initialize: function() {
+		console.log('PostModel init ....');
+	}
+});
+
+var PostCollection = Backbone.Collection.extend({
+	model: PostModel,
+	url: './data/posts.json',
+	initialize: function() {
+		console.log('PostCollection init ....');
+	}
+});
+//views
+var GlobalStage = Gbone.Stage.extend({
+	skeleton: _.template('<div class="viewport"></div>'),
+	initialize: function() {
+		console.log('GlobalStage init ....');
+	}
+});
+
+var PerNewspaperView = Backbone.View.extend({
+	template: _.template($('#per-newspaper').html()),
+	tagName: 'li',
+	initialize: function(options) {
+		this.model = options.model;
+		this.curIndex = options.curIndex;
+	},
+	render: function() {
+		this.$el.data('num', this.curIndex);
+		this.$el.html(this.template(this.model.toJSON()));
+		return this;
+	}
+});
+
+var NewspaperListView = Gbone.Panel.extend({
+	skeleton: _.template('<article class = "newspaper-list-panel"></article>'),
+	template: _.template($('#newspaper-list-container').html()),
+	transitionBindings: ['article.newspaper-list-panel'],
+	events: {
+		'click #slides li': 'showPostListPanel'
+	},
+	initialize: function(options) {
+		console.log('NewspaperListView init ....');
+		this.collection = options.collection;
+		this.subCollection = options.subCollection;
+		this.render();
+	},
+	render: function() {
+		this.$('article.newspaper-list-panel').html(this.template());
+		
+		this.addAll();
+		return this;
+	},
+	addAll: function() {
+		this.collection.each(this.addOne);
+	},
+	addOne: function(model, index) {
+		//console.log('show model...');
+		//console.log(model);
+		
+		//console.log(pluckModel);
+		console.log('show submodel...');
+
+		this.pluckModel(model, index);
+		console.log(model.get('posts').pluck('id'));
+		var view = new PerNewspaperView({model: model, curIndex: index});
+		view.render();
+		this.appendChildInto(view, 'ul.newspapers');
+	},
+	pluckModel: function(model, index) {
+		//var that = this;
+		var curPosts = this.subCollection.filter(function(ele) {
+			console.log(ele.get('parentPanel'));
+			//return ele.get('parentPanel') == (index + 1)
+			if(ele.get('parentPanel') == (index + 1)){
+				ele.set({embodyIn: model});
+				return true;
+			}
+			return false;
+		});
+		console.log(curPosts);
+	},
+	showPostListPanel: function(event) {
+		var num = $(event.currentTarget).data('num');
+		console.log(this.collection.at(num));
+		var postListView = new PostListView({
+			stage: this.stage,
+			name: 'list-posts',
+			model: this.collection.at(num)
+		});
+		postListView.routePanel(function(trans) {
+			$(postListView.el).children().hide();
+			postListView.active({trans: trans || 'left'});
+		});
+
+		this.stage.router.navigate('global-stage/list-posts', true);
+	}
+});
+
+var PostListView = Gbone.Panel.extend({
+	skeleton: _.template('<article class = "post-list-panels"></article>'),
+	template: _.template($('#post-lists').html()),
+	transitionBindings: ['article.post-list-panels'],
+	events: {
+		'click #list div.items>a': 'showPost',
+		'click a.style_black': 'goBack'
+	},
+	initialize: function(options) {
+		this.model = options.model;
+		this.posts = this.model.get('posts');
+		this.render();
+	},
+	render: function() {
+		this.$('article.post-list-panels').html(this.template());
+		this.addAll();
+		return this;
+	},
+	addAll: function() {
+		this.posts.each(this.addOne);
+	},
+	addOne: function(model, index) {
+		console.log('PostListView add one model...');
+		console.log(model);
+		var view = new PerPostListView({model: model, curIndex: index});
+		view.render();
+		this.appendChildInto(view, '#list div.items');
+	},
+	showPost: function(event) {
+		var num = $(event.currentTarget).data('num');
+		var allPosts = this.posts;
+		//console.log((this.model.getRelations()).toJSON());
+		var curPostModel = this.posts.find(function(model, index) {
+			return index == num;
+		})
+		//var curPostModel = allPosts[num];
+		//console.log(curPostModel.toJSON());
+		var postView = new PostView({
+			stage: this.stage,
+			name: 'post-detail',
+			model: curPostModel
+		});
+
+		postView.routePanel(function(trans) {
+			$(postView.el).children().hide();
+			postView.active({trans: trans || 'left'});
+		});
+
+		this.stage.router.navigate('global-stage/post-detail', true);
+	},
+	goBack: function() {
+		this.stage.router.navigate('global-stage/newspaper-list', true);
+		this.cleanup();
+	}
+});
+
+var PerPostListView = Backbone.View.extend({
+	tagName: 'a',
+	template: _.template($('#post-list-item').html()),
+	initialize: function(options) {
+		this.model = options.model;
+		this.curIndex = options.curIndex;
+	},
+	render: function() {
+		this.$el.data('num', this.curIndex);
+		this.$el.data('id', this.model.get('id'));
+		this.$el.html(this.template(this.model.toJSON()));
+		return this;
+	}
+});
+
+var PostView = Gbone.Panel.extend({
+	skeleton: _.template('<article class = "post-panels"></article>'),
+	template: _.template($('#post-contents').html()),
+	transitionBindings: ['article.post-panels'],
+	events: {
+		'click a.style_black': 'goBack'
+	},
+	initialize: function(options) {
+		this.model = options.model;
+		this.render();
+	},
+	render: function() {
+		this.$('article.post-panels').html(this.template(this.model.toJSON()));
+		return this;
+	},
+	goBack: function() {
+		this.stage.router.navigate('global-stage/list-posts', true);
+		this.cleanup();
+	}
+});
+
+//router
+var GlobalRouter = Backbone.Router.extend({
+	routes: {
+		'': 'index'
+	},
+	index: function() {
+		console.log('global router index...');
+		this.navigate('global-stage/newspaper-list', true);
+	}
+});
+var newspaperCollection = new NewspaperCollection();
+var postCollection = new PostCollection();
+
+newspaperCollection.fetch({
+	success: function () {
+		console.log('newspaperCollection fetch success....');
+	},
+	error: function () {
+		console.log('newspaperCollection fetch error....');
+	}
+});
+var globalStage, globalRouter;
+newspaperCollection.bind('reset', function () {
+
+	postCollection.fetch({
+		success: function () {
+			console.log('postCollection fetch success....');
+
+		},
+		error: function () {
+			console.log('postCollection fetch error....');
+		}
+	});
+	postCollection.bind('reset', function() {
+		globalRouter = new GlobalRouter();
+		globalStage = new GlobalStage({
+			name: 'global-stage',
+			router: globalRouter,
+			el: 'body'
+		});
+		var newspaperListView = new NewspaperListView({
+			name: 'newspaper-list',
+			stage: globalStage,
+			collection: newspaperCollection,
+			subCollection: postCollection
+		});
+
+		//newspaperPanelView.addTransition(up_down);
+		newspaperListView.routePanel(function(trans) {
+			$(newspaperListView.el).children().hide();
+			newspaperListView.active({trans: trans || 'left'});
+		});
+
+		Backbone.history.start();
+
+	});
+
+	
+
+});
+
+</script>
+<script type="text/javascript">
+var myScroll;
+function loaded() {
+	setTimeout(function() {
+	//Css3Flip("#slides ul");
+		var myScroll = new iScroll('slides', {
+			snap: 'li',
+			momentum: false,
+			hScroll: true,
+			vScroll: false,
+			hScrollbar: false,
+			vScrollbar: false
+		});
+	},
+	5000);
+}
+window.addEventListener('load', loaded, false);
+</script>
+</body>
+
+</html>
